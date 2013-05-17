@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.leshazlewood</groupId>
+    <artifactId>mvn-multi-module-web-with-jacoco-it-root</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>Maven Multi Module Web app with JaCoCo Integration Tests</name>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>model</module>
+        <module>service</module>
+        <module>web</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.leshazlewood</groupId>
+                <artifactId>mvn-multi-module-web-with-jacoco-it-model</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.leshazlewood</groupId>
+                <artifactId>mvn-multi-module-web-with-jacoco-it-service</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.leshazlewood</groupId>
+                <artifactId>mvn-multi-module-web-with-jacoco-it-web</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+</project>
