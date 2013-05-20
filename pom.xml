@@ -10,6 +10,14 @@
     <name>Maven Multi Module Web app with JaCoCo Integration Tests</name>
     <packaging>pom</packaging>
 
+    <properties>
+        <cargo.plugin.version>1.2.0</cargo.plugin.version>
+        <apache.tomcat.version>7.0.27</apache.tomcat.version>
+        <failsafe.plugin.version>2.12.4</failsafe.plugin.version>
+        <antrun.plugin.version>1.7</antrun.plugin.version>
+        <jacoco.plugin.version>0.6.2.201302030002</jacoco.plugin.version>
+    </properties>
+
     <modules>
         <module>model</module>
         <module>service</module>
@@ -56,9 +64,21 @@
                 <version>2.5</version>
                 <scope>provided</scope>
             </dependency>
-
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.11</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>net.sourceforge.htmlunit</groupId>
+                <artifactId>htmlunit</artifactId>
+                <version>1.14</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
 
     </dependencyManagement>
+
 
 </project>

@@ -35,15 +35,241 @@
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.htmlunit</groupId>
+            <artifactId>htmlunit</artifactId>
+        </dependency>
 
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
-               <groupId>org.eclipse.jetty</groupId>
-               <artifactId>jetty-maven-plugin</artifactId>
-               <version>9.0.3.v20130506</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.5</version>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.tomcat</groupId>
+                                    <artifactId>apache-tomcat</artifactId>
+                                    <version>${apache.tomcat.version}</version>
+                                    <type>zip</type>
+                                    <classifier>bin</classifier>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.plugin.version}</version>
+                <configuration>
+                    <propertyName>jacoco.agent.argLine</propertyName>
+                    <check>
+                        <instructionRatio>90</instructionRatio>
+                    </check>
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <id>jacoco-initialize</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                        <configuration>
+                            <includes>
+                                <include>com.leshazlewood.*</include>
+                            </includes>
+                            <tasks>
+                                <echo>[jacoco.agent.argLine] ${jacoco.agent.argLine}</echo>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.5</version>
+                <executions>
+                    <!-- Copy the ant tasks jar. Needed for ts.jacoco.report-ant . -->
+                    <execution>
+                        <id>jacoco-dependency-ant</id>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <phase>process-test-resources</phase>
+                        <inherited>false</inherited>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.jacoco</groupId>
+                                    <artifactId>org.jacoco.ant</artifactId>
+                                    <version>${jacoco.plugin.version}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.jacoco</groupId>
+                                    <artifactId>org.jacoco.core</artifactId>
+                                    <version>${jacoco.plugin.version}</version>
+                                </artifactItem>
+                            </artifactItems>
+                            <stripVersion>true</stripVersion>
+                            <outputDirectory>${basedir}/target/jacoco-jars</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>${antrun.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target name="report">
+                                <!-- Execute an ant task within maven -->
+                                <echo message="Generating JaCoCo Reports"/>
+                                <taskdef name="report" classname="org.jacoco.ant.ReportTask">
+                                    <classpath path="${basedir}/target/jacoco-jars/*.jar"/>
+                                </taskdef>
+                                <mkdir dir="${basedir}/target/coverage-report"/>
+                                <report>
+                                    <executiondata>
+                                        <fileset dir="${basedir}/target">
+                                            <include name="jacoco.exec"/>
+                                        </fileset>
+                                    </executiondata>
+                                    <structure name="Integration Tests Coverage Report">
+                                        <classfiles>
+                                            <fileset dir="${basedir}/target/classes"/>
+                                            <fileset dir="${basedir}/../model/target/classes"/>
+                                            <fileset dir="${basedir}/../service/target/classes"/>
+                                        </classfiles>
+                                        <sourcefiles encoding="UTF-8">
+                                            <fileset dir="${basedir}/src/main/java"/>
+                                            <fileset dir="${basedir}/../model/src/main/java"/>
+                                            <fileset dir="${basedir}/../service/src/main/java"/>
+                                        </sourcefiles>
+                                    </structure>
+                                    <html destdir="${basedir}/target/coverage-report/html"/>
+                                    <xml destfile="${basedir}/target/coverage-report/coverage-report.xml"/>
+                                    <csv destfile="${basedir}/target/coverage-report/coverage-report.csv"/>
+                                </report>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>org.jacoco.ant</artifactId>
+                        <version>${jacoco.plugin.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${failsafe.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>integration-tests</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                        <phase>integration-test</phase>
+                        <configuration>
+                            <encoding>UTF-8</encoding>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.cargo</groupId>
+                <artifactId>cargo-maven2-plugin</artifactId>
+                <version>${cargo.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>start-container</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>stop-container</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!-- Container configuration -->
+                    <container>
+                        <containerId>tomcat7x</containerId>
+                        <!-- This home is where tomcat was unpacked to. This is also what cargo uses to build its own customized version of tomcat for testing. -->
+                        <home>${project.build.directory}/apache-tomcat-${apache.tomcat.version}</home>
+                        <output>${project.build.directory}/tomcat7x/container.log</output>
+                        <append>false</append>
+                        <log>${project.build.directory}/cargo/tomcat7x/cargo.log</log>
+                        <timeout>300000</timeout>
+                        <systemProperties>
+                            <module.dir>${project.basedir}</module.dir>
+                        </systemProperties>
+                    </container>
+
+                    <!-- Configuration to use with the container -->
+                    <configuration>
+                        <type>standalone</type>
+                        <home>${project.build.directory}/tomcat7x</home>
+                        <properties>
+                            <cargo.servlet.port>8080</cargo.servlet.port>
+                            <cargo.logging>high</cargo.logging>
+                            <cargo.jvmargs>${jacoco.agent.argLine}</cargo.jvmargs>
+                        </properties>
+                        <deployables>
+                            <deployable>
+                                <groupId>com.leshazlewood</groupId>
+                                <artifactId>mmwjacoco-web</artifactId>
+                                <type>war</type>
+                                <properties>
+                                    <context>/</context>
+                                </properties>
+                            </deployable>
+                        </deployables>
+
+                    </configuration>
+                </configuration>
             </plugin>
         </plugins>
     </build>
