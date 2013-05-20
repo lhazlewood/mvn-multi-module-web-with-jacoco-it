@@ -15,7 +15,8 @@
         <apache.tomcat.version>7.0.27</apache.tomcat.version>
         <failsafe.plugin.version>2.12.4</failsafe.plugin.version>
         <antrun.plugin.version>1.7</antrun.plugin.version>
-        <jacoco.plugin.version>0.6.2.201302030002</jacoco.plugin.version>
+        <!--<jacoco.plugin.version>0.6.2.201302030002</jacoco.plugin.version>-->
+        <jacoco.plugin.version>0.6.3-SNAPSHOT</jacoco.plugin.version>
     </properties>
 
     <modules>

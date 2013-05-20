@@ -87,6 +87,19 @@
                     <check>
                         <instructionRatio>90</instructionRatio>
                     </check>
+                    <includes>
+                        <include>com/leshazlewood/**</include>
+                    </includes>
+                    <classFolders>
+                        <classFolder>${basedir}/target/classes</classFolder>
+                        <classFolder>${basedir}/../model/target/classes</classFolder>
+                        <classFolder>${basedir}/../service/target/classes</classFolder>
+                    </classFolders>
+                    <sourceFolders>
+                        <sourceFolder>${basedir}/src/main/java</sourceFolder>
+                        <sourceFolder>${basedir}/../model/src/main/java</sourceFolder>
+                        <sourceFolder>${basedir}/../service/src/main/java</sourceFolder>
+                    </sourceFolders>
                 </configuration>
 
                 <executions>
@@ -96,13 +109,17 @@
                             <goal>prepare-agent</goal>
                         </goals>
                         <configuration>
-                            <includes>
-                                <include>com.leshazlewood.*</include>
-                            </includes>
                             <tasks>
                                 <echo>[jacoco.agent.argLine] ${jacoco.agent.argLine}</echo>
                             </tasks>
                         </configuration>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
@@ -273,5 +290,63 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles><profile><id>jaco</id>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.plugin.version}</version>
+                <configuration>
+                    <propertyName>jacoco.agent.argLine</propertyName>
+                    <check>
+                        <instructionRatio>90</instructionRatio>
+                    </check>
+                    <includes>
+                        <include>*</include>
+                    </includes>
+
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <id>jacoco-initialize</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <echo>[jacoco.agent.argLine] ${jacoco.agent.argLine}</echo>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>jacoco-site</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <includes>
+                                <include>**/*</include>
+                            </includes>
+                            <classFolders>
+                                <classFolder>${basedir}/target/classes</classFolder>
+                                <classFolder>${basedir}/../model/target/classes</classFolder>
+                                <classFolder>${basedir}/../service/target/classes</classFolder>
+                            </classFolders>
+                            <sourceFolders>
+                                <sourceFolder>${basedir}/src/main/java</sourceFolder>
+                                <sourceFolder>${basedir}/../model/src/main/java</sourceFolder>
+                                <sourceFolder>${basedir}/../services/src/main/java</sourceFolder>
+                            </sourceFolders>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    </profile></profiles>
 
 </project>
