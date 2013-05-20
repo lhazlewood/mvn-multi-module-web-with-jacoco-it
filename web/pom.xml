@@ -85,7 +85,7 @@
                 <configuration>
                     <propertyName>jacoco.agent.argLine</propertyName>
                     <check>
-                        <instructionRatio>90</instructionRatio>
+                        <instructionRatio>100</instructionRatio>
                     </check>
                     <includes>
                         <include>com/leshazlewood/**</include>
@@ -119,6 +119,11 @@
                         <phase>verify</phase>
                         <goals>
                             <goal>report</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
                         </goals>
                     </execution>
                 </executions>
